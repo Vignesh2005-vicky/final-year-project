@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="../CSS/login.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<div class="card">
+  <h2>Create Account</h2>
+  <p class="sub">Signup to continue</p>
+
+  <form id="signupForm">
+
+    <!-- EMAIL -->
+    <input type="email" id="email" placeholder="Email">
+
+    <!-- PHONE -->
+    <input type="text" id="phone" placeholder="Phone">
+
+    <!-- PASSWORD -->
+    <div class="password-box">
+      <input type="password" id="password" placeholder="Password">
+      <span id="toggleIcon">👁️</span>
+    </div>
+
+    <button type="submit">Sign Up</button>
+  </form>
+
+  <div class="link">
+    Already have an account? <a href="login.html">Login</a>
+  </div>
+</div>
+
+<script>
+const toast = document.getElementById("toast");
+const emailInput = document.getElementById("email");
+const phoneInput = document.getElementById("phone");
+const passwordInput = document.getElementById("password");
+const toggleIcon = document.getElementById("toggleIcon");
+
+/* PASSWORD EYE TOGGLE */
+toggleIcon.onclick = () => {
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    toggleIcon.textContent = "🙈";
+  } else {
+    passwordInput.type = "password";
+    toggleIcon.textContent = "👁️";
+  }
+};
+
+/* TOAST FUNCTION */
+function showToast(message, success){
+  toast.textContent = message;
+  toast.className = "toast " + (success ? "success" : "error");
+  toast.style.display = "block";
+
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 2500);
+}
+
+/* FORM SUBMIT */
+document.getElementById("signupForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  /* REQUIRED VALIDATION */
+  if (emailInput.value.trim() === "") {
+    showToast("Please enter your email ❌", false);
+    emailInput.focus();
+    return;
+  }
+
+  if (phoneInput.value.trim() === "") {
+    showToast("Please enter your phone number ❌", false);
+    phoneInput.focus();
+    return;
+  }
+
+  if (passwordInput.value.trim() === "") {
+    showToast("Please enter your password ❌", false);
+    passwordInput.focus();
+    return;
+  }
+
+  /* BACKEND SIGNUP */
+  const res = await fetch("http://localhost:5000/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: emailInput.value,
+      phone: phoneInput.value,
+      password: passwordInput.value
+    })
+  });
+
+  const data = await res.json();
+  showToast(data.message, data.success);
+
+  /* CLEAR + RESET */
+  emailInput.value = "";
+  phoneInput.value = "";
+  passwordInput.value = "";
+  passwordInput.type = "password";
+  toggleIcon.textContent = "👁️";
+
+  /* SUCCESS → LOGIN PAGE */
+  if (data.success) {
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 2000);
+  }
+});
+</script>
+
+</body>
+</html>

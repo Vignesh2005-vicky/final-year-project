@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" href="../CSS/login.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<div class="card">
+  <h2>Welcome Back</h2>
+  <p class="sub">Login to continue</p>
+
+  <form id="loginForm">
+
+    <!-- EMAIL -->
+    <input type="email" id="email" placeholder="Email">
+
+    <!-- PASSWORD -->
+    <div class="password-box">
+      <input type="password" id="password" placeholder="Password">
+      <span id="toggleIcon">👁️</span>
+    </div>
+
+    <button type="submit">Login</button>
+  </form>
+
+  <div class="link">
+    Don’t have an account? <a href="signup.html">Sign up</a>
+  </div>
+</div>
+
+<script>
+const toast = document.getElementById("toast");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const toggleIcon = document.getElementById("toggleIcon");
+
+/* PASSWORD EYE TOGGLE */
+toggleIcon.onclick = () => {
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    toggleIcon.textContent = "🙈";
+  } else {
+    passwordInput.type = "password";
+    toggleIcon.textContent = "👁️";
+  }
+};
+
+/* TOAST FUNCTION */
+function showToast(message, success){
+  toast.textContent = message;
+  toast.className = "toast " + (success ? "success" : "error");
+  toast.style.display = "block";
+
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 2000);
+}
+
+/* FORM SUBMIT */
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  /* REQUIRED VALIDATION */
+  if (emailInput.value.trim() === "") {
+    showToast("Please enter your email ❌", false);
+    emailInput.focus();
+    return;
+  }
+
+  if (passwordInput.value.trim() === "") {
+    showToast("Please enter your password ❌", false);
+    passwordInput.focus();
+    return;
+  }
+
+  /* BACKEND LOGIN */
+  const res = await fetch("http://localhost:5000/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: emailInput.value,
+      password: passwordInput.value
+    })
+  });
+
+  const data = await res.json();
+  showToast(data.message, data.success);
+
+  /* CLEAR + RESET */
+  emailInput.value = "";
+  passwordInput.value = "";
+  passwordInput.type = "password";
+  toggleIcon.textContent = "👁️";
+
+  /* SUCCESS → DASHBOARD */
+  if (data.success) {
+    setTimeout(() => {
+      window.location.href = "dashboard.html";
+    }, 2000);
+  }
+});
+</script>
+
+</body>
+</html>

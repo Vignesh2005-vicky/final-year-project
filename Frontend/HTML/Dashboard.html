@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SkinCheck Dashboard</title>
+  <link rel="stylesheet" href="../CSS/dashboard.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo">🧴 SkinCheck</div>
+  <ul class="nav-links">
+    <li><a href="#">About</a></li>
+    <li><a href="#">Profile</a></li>
+    <li><a href="#">Previous Results</a></li>
+    <li><a href="login.html" class="logout">Logout</a></li>
+  </ul>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="dashboard-card">
+
+    <h1>Skin Health Analysis</h1>
+    <p class="subtitle">Upload or update your skin image</p>
+
+    <!-- UPLOAD / UPDATE FIELD -->
+    <div class="upload-box" id="uploadBox" onclick="fileInput.click()">
+      <p id="uploadText"><strong>Click to upload image</strong></p>
+      <input type="file" id="fileInput" accept="image/*" hidden>
+    </div>
+
+    <!-- IMAGE PREVIEW (SAME PLACE) -->
+    <div class="image-wrapper" id="imageWrapper">
+      <img id="previewImg">
+      <span class="remove-icon" onclick="removeImage()">✖</span>
+    </div>
+
+    <button class="analyze-btn" disabled id="analyzeBtn">
+      Analyze Skin
+    </button>
+
+  </div>
+</div>
+
+<script>
+const fileInput = document.getElementById("fileInput");
+const uploadBox = document.getElementById("uploadBox");
+const uploadText = document.getElementById("uploadText");
+const imageWrapper = document.getElementById("imageWrapper");
+const previewImg = document.getElementById("previewImg");
+const analyzeBtn = document.getElementById("analyzeBtn");
+
+/* IMAGE CHOOSE */
+fileInput.addEventListener("change", () => {
+  if (fileInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      previewImg.src = e.target.result;
+
+      // hide upload field
+      uploadBox.style.display = "none";
+
+      // show image in same place
+      imageWrapper.style.display = "block";
+
+      // enable button
+      analyzeBtn.disabled = false;
+
+      // text for next time
+      uploadText.innerHTML = "<strong>Click to update image</strong>";
+    };
+    reader.readAsDataURL(fileInput.files[0]);
+  }
+});
+
+/* CANCEL IMAGE */
+function removeImage() {
+  fileInput.value = "";
+  previewImg.src = "";
+
+  // hide image
+  imageWrapper.style.display = "none";
+
+  // show update field
+  uploadBox.style.display = "block";
+
+  // disable analyze
+  analyzeBtn.disabled = true;
+}
+</script>
+
+</body>
+</html>
